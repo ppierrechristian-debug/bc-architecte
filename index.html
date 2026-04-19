@@ -44,12 +44,26 @@
     .nav-links > li { position: relative; }
     .nav-links > li > a { display: block; padding: .5rem 1.4rem; font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text); text-decoration: none; transition: color .3s; position: relative; }
     .nav-links > li > a::after { content: ''; position: absolute; bottom: 0; left: 1.4rem; right: 1.4rem; height: 1px; background: var(--terre); transform: scaleX(0); transition: transform .3s; }
-    .nav-links > li:hover > a { color: var(--terre); }
-    .nav-links > li:hover > a::after { transform: scaleX(1); }
+    .nav-links > li.active > a { color: var(--terre); }
+    .nav-links > li.active > a::after { transform: scaleX(1); }
 
-    .dropdown { position: absolute; top: calc(100% + .5rem); left: 0; background: var(--white); border: 1px solid var(--sand); min-width: 180px; opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity .25s, transform .25s; z-index: 200; }
-    .nav-links > li:hover .dropdown { opacity: 1; pointer-events: all; transform: translateY(0); }
-    .dropdown a { display: block; padding: .75rem 1.4rem; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text); text-decoration: none; border-bottom: 1px solid var(--sand); transition: background .2s, color .2s; }
+    .dropdown {
+      position: absolute; top: 100%; left: 0;
+      background: var(--white); border: 1px solid var(--sand);
+      min-width: 190px;
+      opacity: 0; pointer-events: none;
+      transform: translateY(4px);
+      transition: opacity .2s, transform .2s;
+      z-index: 200;
+      padding-top: .5rem; /* bridge invisible entre le lien et le dropdown */
+    }
+    .dropdown::before {
+      content: ''; position: absolute;
+      top: -.6rem; left: 0; right: 0; height: .6rem;
+      background: transparent; /* zone de passage invisible */
+    }
+    .nav-links > li.active .dropdown { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .dropdown a { display: block; padding: .85rem 1.4rem; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text); text-decoration: none; border-bottom: 1px solid var(--sand); transition: background .2s, color .2s; }
     .dropdown a:last-child { border-bottom: none; }
     .dropdown a:hover { background: var(--beige); color: var(--terre); }
 
@@ -96,13 +110,28 @@
     .cat-tab:hover { color: var(--text); }
 
     .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-    .project-card { position: relative; overflow: hidden; cursor: pointer; background: var(--sand); }
-    .project-card.featured { grid-column: span 2; }
-    .card-img-placeholder { width: 100%; aspect-ratio: 4/3; transition: transform .6s ease; }
-    .project-card.featured .card-img-placeholder { aspect-ratio: 16/9; }
-    .project-card:hover .card-img-placeholder { transform: scale(1.04); }
-    .card-over { position: absolute; inset: 0; background: linear-gradient(to top, rgba(42,34,26,.72) 0%, transparent 55%); opacity: 0; transition: opacity .4s; display: flex; align-items: flex-end; padding: 1.8rem; }
+    .project-card { position: relative; overflow: hidden; cursor: pointer; background: var(--sand); outline: 2px solid transparent; outline-offset: 0px; transition: outline-color .35s, outline-offset .35s; }
+    .project-card.featured { grid-column: span 1; }
+    .project-card:hover { outline-color: var(--clay); outline-offset: -4px; }
+    .card-img-wrap { overflow: hidden; }
+    .card-img-placeholder { width: 100%; aspect-ratio: 1/1; transition: transform .6s ease; }
+    .project-card:hover .card-img-placeholder { transform: scale(1.05); }
+    .card-over {
+      position: absolute; inset: 0;
+      background: rgba(42,34,26,.45);
+      opacity: 0; transition: opacity .35s;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: .8rem;
+    }
     .project-card:hover .card-over { opacity: 1; }
+    .card-over-frame {
+      position: absolute; inset: 12px;
+      border: 1px solid rgba(196,168,130,.6);
+      pointer-events: none;
+      transform: scale(.94); transition: transform .4s ease;
+    }
+    .project-card:hover .card-over-frame { transform: scale(1); }
     .card-link { font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: var(--beige); border-bottom: 1px solid var(--clay); padding-bottom: 2px; text-decoration: none; }
     .card-info { padding: 1.2rem 1.5rem; }
     .card-cat { font-size: .6rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: .35rem; }
@@ -121,7 +150,9 @@
     .about-img-wrap { position: relative; }
     .about-accent { position: absolute; bottom: -2rem; right: -2rem; width: 55%; aspect-ratio: 1; background: var(--sand); z-index: -1; }
     .about-tag { font-size: .65rem; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
-    .about-title em { font-style: italic; color: var(--terre); }
+    .about-title { font-family: 'Jost', sans-serif; font-size: clamp(1.6rem, 2.5vw, 2.4rem); font-weight: 300; color: var(--muted); line-height: 1.2; margin-bottom: 2rem; letter-spacing: -.01em; }
+    .about-title .nom { font-weight: 700; color: var(--dark); }
+    .about-title em { font-style: normal; }
     .about-text { font-size: .88rem; line-height: 1.9; color: var(--muted); margin-bottom: 1.2rem; }
 
     .timeline { margin-top: 2.5rem; display: flex; flex-direction: column; }
@@ -287,11 +318,14 @@
 
   <div class="projects-grid" id="grid">
 
-    <div class="project-card featured" data-cat="appartement" onclick="window.location='projet-appartement-lyon.html'" style="cursor:pointer;">
-      <div style="overflow:hidden;">
-        <img src="002.webp" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;transition:transform .6s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"/>
+    <div class="project-card" data-cat="appartement" onclick="window.location='projet-appartement-lyon.html'" style="cursor:pointer;">
+      <div class="card-img-wrap">
+        <img src="002.webp" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:transform .6s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
       </div>
-      <div class="card-over"><a href="projet-appartement-lyon.html" class="card-link">Voir le projet</a></div>
+      <div class="card-over">
+        <div class="card-over-frame"></div>
+        <a href="projet-appartement-lyon.html" class="card-link">Voir le projet</a>
+      </div>
       <div class="card-info">
         <p class="card-cat">Appartement · Lyon</p>
         <p class="card-name">Rénovation complète</p>
@@ -299,10 +333,13 @@
     </div>
 
     <div class="project-card" data-cat="appartement" onclick="window.location='projet-appartement-lyon.html'" style="cursor:pointer;">
-      <div style="overflow:hidden;">
-        <img src="004.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;transition:transform .6s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"/>
+      <div class="card-img-wrap">
+        <img src="004.webp" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:transform .6s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
       </div>
-      <div class="card-over"><a href="projet-appartement-lyon.html" class="card-link">Voir le projet</a></div>
+      <div class="card-over">
+        <div class="card-over-frame"></div>
+        <a href="projet-appartement-lyon.html" class="card-link">Voir le projet</a>
+      </div>
       <div class="card-info">
         <p class="card-cat">Appartement · Lyon</p>
         <p class="card-name">Rénovation complète</p>
@@ -310,10 +347,13 @@
     </div>
 
     <div class="project-card" data-cat="appartement" onclick="window.location='projet-appartement-lyon.html'" style="cursor:pointer;">
-      <div style="overflow:hidden;">
-        <img src="3.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;transition:transform .6s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"/>
+      <div class="card-img-wrap">
+        <img src="3.webp" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:transform .6s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
       </div>
-      <div class="card-over"><a href="projet-appartement-lyon.html" class="card-link">Voir le projet</a></div>
+      <div class="card-over">
+        <div class="card-over-frame"></div>
+        <a href="projet-appartement-lyon.html" class="card-link">Voir le projet</a>
+      </div>
       <div class="card-info">
         <p class="card-cat">Appartement · Lyon</p>
         <p class="card-name">Rénovation complète</p>
@@ -321,8 +361,11 @@
     </div>
 
     <div class="project-card" data-cat="habitat">
-      <div class="card-img-placeholder ph-3"></div>
-      <div class="card-over"><a href="#contact" class="card-link">En savoir plus</a></div>
+      <div class="card-img-wrap"><div class="card-img-placeholder ph-3"></div></div>
+      <div class="card-over">
+        <div class="card-over-frame"></div>
+        <a href="#contact" class="card-link">En savoir plus</a>
+      </div>
       <div class="card-info">
         <p class="card-cat">Habitat · HAB01</p>
         <p class="card-name">Maison individuelle</p>
@@ -330,8 +373,11 @@
     </div>
 
     <div class="project-card" data-cat="public">
-      <div class="card-img-placeholder ph-4"></div>
-      <div class="card-over"><a href="#contact" class="card-link">En savoir plus</a></div>
+      <div class="card-img-wrap"><div class="card-img-placeholder ph-4"></div></div>
+      <div class="card-over">
+        <div class="card-over-frame"></div>
+        <a href="#contact" class="card-link">En savoir plus</a>
+      </div>
       <div class="card-info">
         <p class="card-cat">Projet public · PPUB01</p>
         <p class="card-name">Équipement collectif</p>
@@ -339,8 +385,11 @@
     </div>
 
     <div class="project-card" data-cat="autre">
-      <div class="card-img-placeholder ph-5"></div>
-      <div class="card-over"><a href="#contact" class="card-link">En savoir plus</a></div>
+      <div class="card-img-wrap"><div class="card-img-placeholder ph-5"></div></div>
+      <div class="card-over">
+        <div class="card-over-frame"></div>
+        <a href="#contact" class="card-link">En savoir plus</a>
+      </div>
       <div class="card-info">
         <p class="card-cat">Autre</p>
         <p class="card-name">Projet de concours</p>
@@ -348,8 +397,11 @@
     </div>
 
     <div class="project-card" data-cat="autre">
-      <div class="card-img-placeholder ph-6"></div>
-      <div class="card-over"><a href="#contact" class="card-link">En savoir plus</a></div>
+      <div class="card-img-wrap"><div class="card-img-placeholder ph-6"></div></div>
+      <div class="card-over">
+        <div class="card-over-frame"></div>
+        <a href="#contact" class="card-link">En savoir plus</a>
+      </div>
       <div class="card-info">
         <p class="card-cat">Autre</p>
         <p class="card-name">Aménagement intérieur</p>
@@ -368,9 +420,7 @@
   </div>
   <div class="reveal">
     <p class="about-tag">Architecte DPLG · Lyon</p>
-    <h2 class="about-title">
-      Cynthia <em>Binazzi</em>
-    </h2>
+    <h2 class="about-title">cynthia<span class="nom">binazzi</span>architecte</h2>
     <p class="about-text">
       Diplômée de l'École Nationale Supérieure d'Architecture de Lyon, Cynthia Binazzi 
       exerce depuis plus de 10 ans en tant qu'architecte DPLG, inscrite à l'Ordre des Architectes.
@@ -506,6 +556,22 @@
     setTimeout(() => { document.getElementById('projets').scrollIntoView({ behavior: 'smooth' }); }, 300);
   }
 
+  // Dropdown nav avec délai de fermeture
+  const liItems = document.querySelectorAll('.nav-links > li');
+  liItems.forEach(li => {
+    let closeTimer;
+    li.addEventListener('mouseenter', () => {
+      clearTimeout(closeTimer);
+      liItems.forEach(el => el.classList.remove('active'));
+      li.classList.add('active');
+    });
+    li.addEventListener('mouseleave', () => {
+      closeTimer = setTimeout(() => {
+        li.classList.remove('active');
+      }, 200); // 200ms de délai avant fermeture
+    });
+  });
+
   // Nav scroll
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
@@ -532,10 +598,10 @@
       card.style.display = match ? 'block' : 'none';
       card.classList.remove('featured');
     });
-    // restore featured on first appartement card when showing all
-    if (cat === 'all') {
-      document.querySelector('[data-cat="appartement"]').classList.add('featured');
-    }
+    // restore featured on first appartement card when showing all — désactivé format carré
+    // if (cat === 'all') {
+    //   document.querySelector('[data-cat="appartement"]').classList.add('featured');
+    // }
     document.getElementById('projets').scrollIntoView({ behavior: 'smooth' });
   }
 
